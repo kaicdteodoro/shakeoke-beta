@@ -43,7 +43,7 @@
       </v-list-group>
 
       <template v-for="link in links" :key="link.title">
-        <router-link custom :to="link.route" v-slot="{ navigate }">
+        <router-link custom :to="{ name: link.route }" v-slot="{ navigate }">
           <v-list-item
             :prepend-icon="link.icon"
             :title="link.title"
@@ -57,24 +57,20 @@
 </template>
 
 <script>
+import { sideBarLinks } from "@/router/routes";
 export default {
   name: "NavBar",
 
   data: () => ({
     drawer: true,
     rail: false,
-    links: [
-      {
-        icon: "mdi-home-city",
-        title: "Home",
-        route: "/",
-      },
-      {
-        icon: "mdi-home-city",
-        title: "Home",
-        route: "/teste",
-      },
-    ],
+    links: sideBarLinks(),
   }),
+  setup() {
+    //
+  },
+  computed: {
+    //
+  },
 };
 </script>
