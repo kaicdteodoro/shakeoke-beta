@@ -1,8 +1,8 @@
-import axios from "aaxios";
-import router from "@/router";
+/* import axios from "aaxios";
+import router from "@/router"; */
 import { defineStore } from "pinia";
 
-const baseUrl = `${import.meta.env.VITE_API_URL}/users`;
+/* const baseUrl = `${import.meta.env.VITE_API_URL}/users`; */
 
 export const useAlertStore = defineStore({
   id: "alert",
@@ -22,7 +22,24 @@ export const useAlertStore = defineStore({
   },
 });
 
-export const useAuthStore = defineStore({
+export const useShowNavBar = defineStore({
+  id: "showNavBar",
+  state: () => ({
+    show: false,
+  }),
+  getters: {
+    getShow(state) {
+      return state.show;
+    },
+  },
+  actions: {
+    showHide(bool) {
+      this.show = bool;
+    },
+  },
+});
+
+/* export const useAuthStore = defineStore({
   id: "auth",
   state: () => ({
     // initialize state from local storage to enable user to stay logged in
@@ -116,3 +133,4 @@ export const useUsersStore = defineStore({
     },
   },
 });
+ */

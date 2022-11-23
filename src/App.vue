@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <nav-bar />
+    <nav-bar v-model="navbar" />
     <v-main>
       <v-container class="py-8 px-6" fluid>
         <p v-text="this.$route.matched.name"></p>
@@ -21,21 +21,29 @@
 </template>
 
 <script>
+import { storeToRefs } from "pinia";
 import NavBar from "@/components/NavBar";
+import { useShowNavBar } from "@/stores";
 import { routeValues } from "@/router/routes";
 
 export default {
   data: () => ({
-    //
+    navbar: true,
   }),
   computed: {
+    showNav() {
+      const { getShow } = storeToRefs(useShowNavBar());
+      return getShow;
+    },
+    currentRoute() {
+      let value = this.$router.currentRoute.value;
+      return { value: value, routeValue: routeValues(value.name) };
+    },
     pageIcon() {
-      return (
-        routeValues(this.$router.currentRoute.value.name)?.icon ?? "mdi-origin"
-      );
+      return this.currentRoute.routeValue?.icon ?? "mdi-origin";
     },
     items() {
-      const paths = this.$router.currentRoute.value.fullPath.split("/");
+      const paths = this.currentRoute.value.fullPath.split("/");
 
       paths.shift();
 
@@ -48,7 +56,11 @@ export default {
       });
     },
   },
-  setup() {
+  mounted() {
+    this.navbar = this.showNav;
+  },
+  methods: {
+    //
   },
   components: {
     NavBar,

@@ -9,10 +9,10 @@ import { createApp } from "vue/dist/vue.esm-bundler.js";
 loadFonts();
 
 const app = createApp(App);
+const pinia = createPinia();
 
-
+app.use(pinia);
 app.use(router);
-app.use(createPinia());
 app.use(vuetify);
 
 
