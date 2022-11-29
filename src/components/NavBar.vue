@@ -7,6 +7,7 @@
   >
     <v-list-item
       prepend-avatar="https://randomuser.me/api/portraits/men/85.jpg"
+      @click="menuExpand"
       title="John Leider"
       nav
     >
@@ -18,30 +19,22 @@
         ></v-btn>
       </template>
     </v-list-item>
+    <v-expand-transition>
+      <v-card v-show="expand" height="100" class="mx-auto">
+        <v-list density="compact" nav>
+          <v-list-item
+            @click="authStore.logout()"
+            prepend-icon="mdi-logout"
+            title="Logout"
+            value="account"
+          ></v-list-item>
+        </v-list>
+      </v-card>
+    </v-expand-transition>
 
     <v-divider></v-divider>
 
     <v-list density="compact" nav>
-      <v-list-group value="Users">
-        <template v-slot:activator="{ props }">
-          <v-list-item
-            v-bind="props"
-            prepend-icon="mdi-account-circle"
-            title="Users"
-          ></v-list-item>
-        </template>
-        <v-list-item
-          prepend-icon="mdi-account"
-          title="My Account"
-          value="account"
-        ></v-list-item>
-        <v-list-item
-          prepend-icon="mdi-home-city"
-          title="Home"
-          value="home"
-        ></v-list-item>
-      </v-list-group>
-
       <template v-for="link in links" :key="link.title">
         <router-link custom :to="{ name: link.route }" v-slot="{ navigate }">
           <v-list-item
@@ -62,12 +55,20 @@ export default {
   name: "NavBar",
 
   data: () => ({
-    drawer: true,
     rail: false,
+    drawer: true,
+    expand: false,
     links: sideBarLinks(),
   }),
   setup() {
     //
+  },
+  methods: {
+    menuExpand() {
+      if (!this.rail) {
+        this.expand = !this.expand;
+      }
+    },
   },
   computed: {
     //

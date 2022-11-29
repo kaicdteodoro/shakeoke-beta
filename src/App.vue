@@ -3,8 +3,8 @@
     <nav-bar v-model="navbar" />
     <v-main>
       <v-container class="py-8 px-6" fluid>
-        <p v-text="this.$route.matched.name"></p>
-        <v-breadcrumbs :items="items" class="text-capitalize">
+        <alert-vue v-if="navbar"/>
+        <v-breadcrumbs :items="items" class="text-capitalize" v-show="navbar">
           <template v-slot:prepend>
             <v-icon size="small" :icon="pageIcon"></v-icon>
           </template>
@@ -24,16 +24,25 @@
 import { storeToRefs } from "pinia";
 import NavBar from "@/components/NavBar";
 import { useShowNavBar } from "@/stores";
+import AlertVue from "@/components/Alert.vue";
 import { routeValues } from "@/router/routes";
 
 export default {
   data: () => ({
-    navbar: true,
+    navbar: false,
   }),
+  watch: {
+    $route(to) {
+      const { show } = storeToRefs(useShowNavBar());
+
+      show.value = to.name !== "account.login";
+      this.navbar = this.showNav;
+    },
+  },
   computed: {
     showNav() {
       const { getShow } = storeToRefs(useShowNavBar());
-      return getShow;
+      return getShow.value;
     },
     currentRoute() {
       let value = this.$router.currentRoute.value;
@@ -51,19 +60,18 @@ export default {
         return {
           title: namePath !== "" ? namePath : "home",
           disabled: index === paths.length - 1,
-          href: `#${routeValues(namePath)?.path ?? "/home"}`,
+          href: `#${routeValues(namePath)?.path ?? "/"}`,
         };
       });
     },
   },
-  mounted() {
-    this.navbar = this.showNav;
-  },
+  mounted() {},
   methods: {
     //
   },
   components: {
     NavBar,
+    AlertVue,
   },
 };
 </script>

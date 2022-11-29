@@ -1,3 +1,5 @@
+import { ucFirst } from "@/helpers";
+import LoginVue from "@/components/Login";
 import QueueList from "@/components/Queue/QueueList";
 
 // deixar as rotas com tela específica no routes, e as rotas de consumo de api ou de retorno de informações no apiROutes
@@ -11,45 +13,19 @@ const routes = [
   {
     path: "/teste",
     name: "teste",
-    icon: "mdi-origin",
-    component: { template: "<div>teste</div>" },
-    children: [
-      {
-        path: "/teste/teste2",
-        name: "teste2",
-        icon: "mdi-origin",
-        component: { template: "<div>teste2</div>" },
-      },
-    ],
+    icon: "mdi-orign",
+    component: {template: "<div>TESTE</div>"},
   },
 ];
 
 const authRoutes = [
   {
-    path: "/account",
-    component: { template: "<div>Layout</div>" },
-    children: [
-      {
-        path: "",
-        redirect: "login",
-      },
-      {
-        path: "login",
-        name: "account.login",
-        icon: "mdi-account-circle",
-        component: { template: "<div>Login</div>" },
-      },
-      {
-        path: "register",
-        name: "account.register",
-        icon: "mdi-account-circle",
-        component: { template: "<div>Register</div>" },
-      },
-    ],
+    path: "/login",
+    name: "account.login",
+    icon: "mdi-account-circle",
+    component: LoginVue,
   },
 ];
-
-const apiRoutes = [];
 
 export const routeValues = (name) => {
   return routes.find((route) => {
@@ -67,8 +43,4 @@ export const sideBarLinks = () => {
   });
 };
 
-let ucFirst = (string) => {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-};
-
-export default routes.concat(apiRoutes).concat(authRoutes);
+export default routes.concat(authRoutes);

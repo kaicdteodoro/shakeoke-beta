@@ -33,7 +33,6 @@
 
 <script>
 import { useTheme } from 'vuetify';
-
 export default {
   name: "QueueList",
   data: () => ({

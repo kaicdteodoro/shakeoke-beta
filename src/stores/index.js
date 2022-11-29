@@ -1,8 +1,8 @@
-/* import axios from "aaxios";
-import router from "@/router"; */
+//import axios from "axios";
+
 import { defineStore } from "pinia";
 
-/* const baseUrl = `${import.meta.env.VITE_API_URL}/users`; */
+//const baseUrl = `http://localhost:8080/api`;
 
 export const useAlertStore = defineStore({
   id: "alert",
@@ -11,10 +11,28 @@ export const useAlertStore = defineStore({
   }),
   actions: {
     success(message) {
-      this.alert = { message, type: "alert-success" };
+      this.alert = {
+        density: "compact",
+        variant: "text",
+        type: "success",
+        message,
+      };
     },
     error(message) {
-      this.alert = { message, type: "alert-danger" };
+      this.alert = {
+        density: "compact",
+        variant: "text",
+        type: "error",
+        message,
+      };
+    },
+    loginError(message) {
+      this.alert = {
+        density: "compact",
+        variant: "text",
+        type: "error",
+        message,
+      };
     },
     clear() {
       this.alert = null;
@@ -39,19 +57,20 @@ export const useShowNavBar = defineStore({
   },
 });
 
-/* export const useAuthStore = defineStore({
+export const useAuthStore = defineStore({
   id: "auth",
   state: () => ({
     // initialize state from local storage to enable user to stay logged in
     user: JSON.parse(localStorage.getItem("user")),
     _token: localStorage.getItem("_token"),
-    returnRoute: null,
   }),
   actions: {
-    async login(username, password) {
+    async login(email, password) {
       try {
-        const user = await axios.post(`${baseUrl}/authenticate`, {
-          username,
+        this._token = "teste";
+        console.log(email, password, this._token);
+        /* const data = await axios.post(`${baseUrl}/auth/login`, {
+          email,
           password,
         });
 
@@ -60,23 +79,23 @@ export const useShowNavBar = defineStore({
 
         // store user details and jwt in local storage to keep user logged in between page refreshes
         localStorage.setItem("user", JSON.stringify(user));
-
+*/
         // redirect to previous url or default to home page
-        router.push(this.returnUrl || "home");
+        return this.router.push({name: "home"});
       } catch (error) {
         const alertStore = useAlertStore();
-        alertStore.error(error);
+        alertStore.loginError(error);
       }
     },
     logout() {
       this.user = null;
       localStorage.removeItem("user");
-      router.push("login");
+   //   router.push({ name: "account.login" });
     },
   },
 });
 
-export const useUsersStore = defineStore({
+/* export const useUsersStore = defineStore({
   id: "users",
   state: () => ({
     users: {},
@@ -132,5 +151,4 @@ export const useUsersStore = defineStore({
       }
     },
   },
-});
- */
+}); */
