@@ -27,8 +27,8 @@
                   @click:append="show1 = !show1"
                 ></v-text-field>
               </v-col>
-              <v-col class="d-flex" cols="12" sm="6" xsm="12">
-                <alert-vue />
+              <v-col class="d-flex" cols="12" sm="9" xsm="12">
+                <alert-vue class="d-flex float-left" position="absolute" />
               </v-col>
               <v-spacer></v-spacer>
               <v-col class="d-flex" cols="12" sm="3" xsm="12" align-end>
@@ -36,6 +36,7 @@
                   x-large
                   block
                   :disabled="!valid"
+                  variant="outlined"
                   color="success"
                   @click="validate"
                 >
@@ -52,7 +53,7 @@
 
 <script>
 import AlertVue from "./Alert.vue";
-import { useAuthStore } from "@/stores";
+import { useAuthStore, useAlertStore } from "@/stores";
 
 export default {
   name: "LoginVue",
@@ -76,10 +77,12 @@ export default {
   methods: {
     async validate() {
       if (this.$refs.loginForm.validate()) {
-        const { login, _token } = useAuthStore();
-        await login(this.loginEmail, this.loginPassword, _token);
+        await useAuthStore().login(this.loginEmail, this.loginPassword);
       }
     },
+  },
+  mounted() {
+    useAlertStore().info("complete the fields to continue");
   },
   components: {
     AlertVue,

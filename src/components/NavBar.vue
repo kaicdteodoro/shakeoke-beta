@@ -6,9 +6,9 @@
     permanent
   >
     <v-list-item
-      prepend-avatar="https://randomuser.me/api/portraits/men/85.jpg"
+      prepend-avatar="https://randomuser.me/api/portraits/lego/2.jpg"
       @click="menuExpand"
-      title="John Leider"
+      :title="userName"
       nav
     >
       <template v-slot:append>
@@ -20,13 +20,12 @@
       </template>
     </v-list-item>
     <v-expand-transition>
-      <v-card v-show="expand" height="100" class="mx-auto">
+      <v-card v-show="expand" class="mx-auto">
         <v-list density="compact" nav>
           <v-list-item
-            @click="authStore.logout()"
+            @click="logout"
             prepend-icon="mdi-logout"
             title="Logout"
-            value="account"
           ></v-list-item>
         </v-list>
       </v-card>
@@ -50,6 +49,9 @@
 </template>
 
 <script>
+import { storeToRefs } from "pinia";
+import { ucFirst } from "@/helpers";
+import { useAuthStore } from "@/stores";
 import { sideBarLinks } from "@/router/routes";
 export default {
   name: "NavBar",
@@ -60,18 +62,21 @@ export default {
     expand: false,
     links: sideBarLinks(),
   }),
-  setup() {
-    //
-  },
   methods: {
     menuExpand() {
       if (!this.rail) {
         this.expand = !this.expand;
       }
     },
+    logout() {
+      useAuthStore().logout();
+    },
   },
   computed: {
-    //
+    userName() {
+      const { user } = storeToRefs(useAuthStore());
+      return ucFirst(user.value);
+    },
   },
 };
 </script>

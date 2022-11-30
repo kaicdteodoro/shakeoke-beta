@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { useTheme } from 'vuetify';
+import { useTheme } from "vuetify";
 export default {
   name: "QueueList",
   data: () => ({

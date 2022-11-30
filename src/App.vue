@@ -2,14 +2,17 @@
   <v-app>
     <nav-bar v-model="navbar" />
     <v-main>
+      <alert-vue
+        class="d-flex float-right mt-2 mr-6"
+        position="absolute"
+        v-if="navbar"
+      />
       <v-container class="py-8 px-6" fluid>
-        <alert-vue v-if="navbar"/>
         <v-breadcrumbs :items="items" class="text-capitalize" v-show="navbar">
           <template v-slot:prepend>
             <v-icon size="small" :icon="pageIcon"></v-icon>
           </template>
         </v-breadcrumbs>
-
         <router-view v-slot="{ Component, route }">
           <transition :name="route.meta.transitionName">
             <component :is="Component"> </component>
@@ -64,10 +67,6 @@ export default {
         };
       });
     },
-  },
-  mounted() {},
-  methods: {
-    //
   },
   components: {
     NavBar,

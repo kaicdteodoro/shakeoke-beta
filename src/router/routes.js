@@ -2,19 +2,12 @@ import { ucFirst } from "@/helpers";
 import LoginVue from "@/components/Login";
 import QueueList from "@/components/Queue/QueueList";
 
-// deixar as rotas com tela específica no routes, e as rotas de consumo de api ou de retorno de informações no apiROutes
 const routes = [
   {
     path: "/",
     name: "home",
     icon: "mdi-home",
     component: QueueList,
-  },
-  {
-    path: "/teste",
-    name: "teste",
-    icon: "mdi-orign",
-    component: {template: "<div>TESTE</div>"},
   },
 ];
 
