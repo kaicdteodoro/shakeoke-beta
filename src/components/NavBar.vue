@@ -44,6 +44,7 @@
           </v-list-item>
         </router-link>
       </template>
+      <!-- <v-list-item @click="alerta">teste</v-list-item> -->
     </v-list>
   </v-navigation-drawer>
 </template>
@@ -51,7 +52,7 @@
 <script>
 import { storeToRefs } from "pinia";
 import { ucFirst } from "@/helpers";
-import { useAuthStore } from "@/stores";
+import { useAuthStore, useAlertStore } from "@/stores";
 import { sideBarLinks } from "@/router/routes";
 export default {
   name: "NavBar",
@@ -71,6 +72,9 @@ export default {
     logout() {
       useAuthStore().logout();
     },
+    alerta() {
+      useAlertStore().error('teste');
+    }
   },
   computed: {
     userName() {

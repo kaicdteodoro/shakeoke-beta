@@ -4,7 +4,12 @@
       <template v-slot:title> Login </template>
       <v-card-text>
         <v-card-text>
-          <v-form ref="loginForm" v-model="valid" lazy-validation>
+          <v-form
+            ref="loginForm"
+            v-model="valid"
+            lazy-validation
+            @submit.stop.prevent="validate()"
+          >
             <v-row>
               <v-col cols="12">
                 <v-text-field
@@ -31,17 +36,20 @@
                 <alert-vue class="d-flex float-left" position="absolute" />
               </v-col>
               <v-spacer></v-spacer>
-              <v-col class="d-flex" cols="12" sm="3" xsm="12" align-end>
-                <v-btn
-                  x-large
-                  block
-                  :disabled="!valid"
-                  variant="outlined"
-                  color="success"
-                  @click="validate"
-                >
-                  Login
-                </v-btn>
+              <v-col class="d-flex mb-none" cols="12" sm="3" xsm="12" align-end>
+                <v-card-actions>
+                  <v-btn
+                    x-large
+                    block
+                    :disabled="!valid"
+                    variant="plain"
+                    color="success"
+                    type="submit"
+                    @click="validate"
+                  >
+                    Login
+                  </v-btn>
+                </v-card-actions>
               </v-col>
             </v-row>
           </v-form>
@@ -58,7 +66,6 @@ import { useAuthStore, useAlertStore } from "@/stores";
 export default {
   name: "LoginVue",
   data: () => ({
-    loginReturn: null,
     dialog: true,
     valid: true,
     loginPassword: "",

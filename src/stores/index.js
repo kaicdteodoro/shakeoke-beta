@@ -1,5 +1,11 @@
+import {
+  login,
+  allQueues,
+  createQueue,
+  deleteQueue,
+  allQueueMusics,
+} from "@/router/api-routes";
 import { defineStore } from "pinia";
-import { login, allQueues } from "@/router/api-routes";
 
 const alertDefault = (type, message) => {
   return {
@@ -54,16 +60,56 @@ export const useQueueStore = defineStore({
   id: "queue",
   state: () => ({
     queues: localStorage.getItem("queues"),
-    //queues.map((obj)=> return obj.id;).indexOf('abc')
+  }),
+  getters: {
+    getQueueIds() {
+      return this.queues?.map((queue) => {
+        return queue.id;
+      });
+    },
+  },
+  actions: {
+    async create(name) {
+      const data = await createQueue(name);
+      if (data) {
+        console.log(data);
+        this.queues.unshift(data);
+      }
+    },
+
+    async delete(queueId) {
+      await deleteQueue(queueId);
+      let index = this.getQueueIds.indexOf(queueId);
+      this.queues.splice(index, 1);
+    },
+    async setQueues() {
+      this.queues = await allQueues();
+      if (this.queues) {
+        localStorage.setItem("queues", this.queues);
+        this.getQueueIds.forEach((id) => {
+          useQueueMusicStore().setMusics(id);
+        });
+      }
+    },
+  },
+});
+
+export const useQueueMusicStore = defineStore({
+  id: "queueMusic",
+  state: () => ({
+    queueMusic: [],
   }),
   actions: {
-    async setQueues() {
+    async setMusics(queueId) {
       try {
-        this.queues = await allQueues();
-        localStorage.setItem("queues", this.queues);
+        let data = {
+          queue_id: queueId,
+          musics: await allQueueMusics(queueId),
+        };
+        this.queueMusic.push(data);
       } catch (error) {
         const alertStore = useAlertStore();
-        alertStore.error(error.response.statusText);
+        alertStore.error(error);
       }
     },
   },
@@ -77,19 +123,15 @@ export const useAuthStore = defineStore({
   }),
   actions: {
     async login(email, password) {
-      try {
-        const data = await login(email, password);
-
-        this.user = data.userName;
+      const data = await login(email, password);
+      if (data) {
+        this.user = data.name;
         this._token = data.access_token;
 
         localStorage.setItem("user", this.user);
         localStorage.setItem("_token", this._token);
 
         this.router.push({ name: "home" });
-      } catch (error) {
-        const alertStore = useAlertStore();
-        alertStore.error(error.response.statusText);
       }
     },
     async logout() {
