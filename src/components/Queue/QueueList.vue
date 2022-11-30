@@ -33,14 +33,15 @@
 
 <script>
 import { useTheme } from "vuetify";
+import { allQueues } from "@/router/api-routes";
 export default {
   name: "QueueList",
   data: () => ({
     theme: useTheme().global.name.value,
     cards: ["Today", "Yesterday"],
   }),
-  components: {
-    //
+  async mounted() {
+   this.cards = await allQueues();
   },
 };
 </script>

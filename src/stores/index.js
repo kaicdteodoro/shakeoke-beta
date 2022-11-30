@@ -1,6 +1,5 @@
-import axios from "axios";
 import { defineStore } from "pinia";
-import apiRoutes from "@/router/api-routes";
+import { login } from "@/router/api-routes";
 
 const alertDefault = (type, message) => {
   return {
@@ -60,10 +59,11 @@ export const useAuthStore = defineStore({
   actions: {
     async login(email, password) {
       try {
-        const { data } = await axios.post(apiRoutes.login, { email, password });
+        const data = await login(email, password);
 
-        this.user = data.name;
+        this.user = data.userName;
         this._token = data.access_token;
+
         localStorage.setItem("user", this.user);
         localStorage.setItem("_token", this._token);
 
@@ -73,7 +73,7 @@ export const useAuthStore = defineStore({
         alertStore.error(error.response.statusText);
       }
     },
-    logout() {
+    async logout() {
       this.user = null;
       this._token = null;
       localStorage.removeItem("user");
