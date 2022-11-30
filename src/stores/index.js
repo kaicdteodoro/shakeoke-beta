@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { login } from "@/router/api-routes";
+import { login, allQueues } from "@/router/api-routes";
 
 const alertDefault = (type, message) => {
   return {
@@ -50,6 +50,25 @@ export const useShowNavBar = defineStore({
   },
 });
 
+export const useQueueStore = defineStore({
+  id: "queue",
+  state: () => ({
+    queues: localStorage.getItem("queues"),
+    //queues.map((obj)=> return obj.id;).indexOf('abc')
+  }),
+  actions: {
+    async setQueues() {
+      try {
+        this.queues = await allQueues();
+        localStorage.setItem("queues", this.queues);
+      } catch (error) {
+        const alertStore = useAlertStore();
+        alertStore.error(error.response.statusText);
+      }
+    },
+  },
+});
+
 export const useAuthStore = defineStore({
   id: "auth",
   state: () => ({
@@ -78,6 +97,7 @@ export const useAuthStore = defineStore({
       this._token = null;
       localStorage.removeItem("user");
       localStorage.removeItem("_token");
+      localStorage.removeItem("queues");
       this.router.push({ name: "account.login" });
     },
   },

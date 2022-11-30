@@ -21,7 +21,7 @@ import { useAlertStore } from "@/stores";
 export default {
   name: "AlertVue",
   data: () => ({
-    alert,
+    alert: null,
   }),
   mounted() {
     const { alert } = storeToRefs(useAlertStore());
