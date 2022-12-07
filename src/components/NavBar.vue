@@ -51,7 +51,7 @@
 
 <script>
 import { storeToRefs } from "pinia";
-import { ucFirst } from "@/helpers";
+import { ucFirst, isMobile } from "@/helpers";
 import { useAuthStore, useAlertStore } from "@/stores";
 import { sideBarLinks } from "@/router/routes";
 export default {
@@ -63,6 +63,9 @@ export default {
     expand: false,
     links: sideBarLinks(),
   }),
+  mounted() {
+    this.rail = isMobile();
+  },
   methods: {
     menuExpand() {
       if (!this.rail) {

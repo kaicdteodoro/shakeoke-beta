@@ -66,12 +66,12 @@ export const createQueue = async (inputs) => {
 
 export const updateQueue = async (queueId, data) => {
   try {
-    await axios.patch(routes.queue(queueId), { name: data.name });
+    await axios.patch(routes.queue(queueId), data);
   } catch (error) {
     if (error.response.status === 401) {
       useAuthStore().logout();
     }
-    useAlertStore().error(error);
+    useAlertStore().error(error.response.statusText);
   }
 };
 
@@ -88,15 +88,17 @@ export const deleteQueue = async (queueId) => {
 
 //Queue Musics
 
-export const allQueueMusics = async (queueId) => {
+export const allQueueMusics = async (queueId, query) => {
   try {
-    const { data } = await axios.get(routes.queueMusic(queueId));
+    const { data } = await axios.get(routes.queueMusic(queueId), {
+      params: { show_done: query?.show_done ?? 0 },
+    });
     return data.data;
   } catch (error) {
-    if (error.response.status === 401) {
+    useAlertStore().error(error);
+    if (error.response?.status === 401) {
       useAuthStore().logout();
     }
-    useAlertStore().error(error);
   }
   return [];
 };
@@ -107,10 +109,21 @@ export const createQueueMusic = async (queueId, inputs) => {
       reference_name: inputs.name,
       url: inputs.url,
     });
-    console.log(data);
     return data.data;
   } catch (error) {
     if (error.response.status === 401) {
+      useAuthStore().logout();
+    }
+    useAlertStore().error(error);
+  }
+};
+
+export const updateQueueMusic = async (queueId, musicId, inputs) => {
+  try {
+    const { data } = await axios.patch(routes.queueMusic(queueId, musicId), inputs);
+    return data.data;
+  } catch (error) {
+    if (error.response?.status === 401) {
       useAuthStore().logout();
     }
     useAlertStore().error(error);

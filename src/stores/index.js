@@ -4,6 +4,7 @@ import {
   createQueue,
   updateQueue,
   deleteQueue,
+  updateQueueMusic,
   allQueueMusics,
   createQueueMusic,
 } from "@/router/api-routes";
@@ -64,8 +65,8 @@ export const useQueueStore = defineStore({
     queues: localStorage.getItem("queues"),
   }),
   getters: {
-    getQueueIds() {
-      return this.queues?.map((queue) => {
+    getQueueIds(state) {
+      return state.queues?.map((queue) => {
         return queue.id;
       });
     },
@@ -82,7 +83,21 @@ export const useQueueStore = defineStore({
     async update(queueId, data) {
       await updateQueue(queueId, data);
       let index = this.getQueueIds.indexOf(queueId);
-      this.queues[index].name = data.name;
+      if (data.name !== undefined) {
+        this.queues[index].name = data.name;
+      }
+      if (data.closing_date !== undefined) {
+        this.queues[index].closing_date = data.closing_date;
+      }
+    },
+
+    async open(queueId) {
+      await this.update(queueId, { closing_date: null });
+    },
+
+    async close(queueId) {
+      let now = new Date();
+      await this.update(queueId, { closing_date: now.toISOString() });
     },
 
     async delete(queueId) {
@@ -109,31 +124,67 @@ export const useQueueMusicStore = defineStore({
     queueMusic: [],
   }),
   getters: {
-    getQueueMusicIds() {
-      return this.queueMusic?.map((queue) => {
+    getQueueMusicQueueIds: (state) => {
+      return state.queueMusic?.map((queue) => {
         return queue.queue_id;
       });
     },
+    getQueueMusicIds: (state) => {
+      return (index) =>
+        state.queueMusic[index]?.musics?.map((queue) => {
+          return queue.id;
+        });
+    },
   },
   actions: {
-    async create(queueId, data) { 
+    async create(queueId, data) {
       const response = await createQueueMusic(queueId, data);
       if (response) {
-        let index = this.getQueueMusicIds.indexOf(queueId);
+        let index = this.getQueueMusicQueueIds.indexOf(queueId);
         this.queueMusic[index].musics.push(response);
       }
     },
-    async setMusics(queueId, empty) {
+    async update(queueId, musicId, data) {
+      await updateQueueMusic(queueId, musicId, data);
+      let queueIndex = this.getQueueMusicQueueIds?.indexOf(queueId);
+      let musicIndex = this.getQueueMusicIds(queueIndex)?.indexOf(musicId);
+
+      if (data.url !== undefined) {
+        this.queueMusic[queueIndex].musics[musicIndex].url = data.url;
+      }
+
+      if (data.done !== undefined) {
+        this.queueMusic[queueIndex].musics[musicIndex].done = data.done;
+      }
+
+      if (data.order !== undefined) {
+        this.queueMusic[queueIndex].musics[musicIndex].order = data.order;
+      }
+
+      if (data.reference_name !== undefined) {
+        this.queueMusic[queueIndex].musics[musicIndex].reference_name =
+          data.reference_name;
+      }
+    },
+    async setMusics(queueId, empty, query) {
       try {
+        let index = this.getQueueMusicQueueIds.indexOf(queueId);
         let data = {
           queue_id: queueId,
-          musics: empty ? [] : await allQueueMusics(queueId),
+          musics: empty ? [] : await allQueueMusics(queueId, query),
         };
-        this.queueMusic.push(data);
+        if (this.queueMusic[index]) {
+          this.queueMusic[index].musics = data.musics;
+        } else {
+          this.queueMusic.push(data);
+        }
       } catch (error) {
         const alertStore = useAlertStore();
         alertStore.error(error);
       }
+    },
+    async doneMusic(queueId, musicId, done) {
+      await this.update(queueId, musicId, { done });
     },
   },
 });
