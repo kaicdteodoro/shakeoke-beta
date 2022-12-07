@@ -7,17 +7,24 @@ axios.interceptors.request.use((config) => {
   return config;
 });
 
-const baseUrl = "http://localhost:8080/api";
+const baseUrl = `http://${window.location.hostname}:8080/api`;
 
 //TODO: melhorar retorno das rotas de api
 const routes = {
   login: `${baseUrl}/auth/login`,
-  queues: `${baseUrl}/queue`,
   queue: (queueId) => {
-    return `${baseUrl}/queue/${queueId}`;
+    let url = `${baseUrl}/queue`;
+    if (queueId) {
+      url += `/${queueId}`;
+    }
+    return url;
   },
-  allQueueMusics: (queueId) => {
-    return `${baseUrl}/queue/${queueId}/music`;
+  queueMusic: (queueId, queueMusicId) => {
+    let url = `${baseUrl}/queue/${queueId}/music`;
+    if (queueMusicId) {
+      url += `/${queueMusicId}`;
+    }
+    return url;
   },
 };
 
@@ -26,45 +33,45 @@ export const login = async (email, password) => {
     const { data } = await axios.post(routes.login, { email, password });
     return data;
   } catch (error) {
-    useAlertStore().error(error.response.statusText);
+    useAlertStore().error(error);
   }
 };
+
+//Queues
 
 export const allQueues = async () => {
   try {
-    const { data } = await axios.get(routes.queues);
+    const { data } = await axios.get(routes.queue());
     return data.data;
   } catch (error) {
     if (error.response.status === 401) {
       useAuthStore().logout();
     }
-    useAlertStore().error(error.response.statusText);
+    useAlertStore().error(error);
   }
   return [];
 };
 
-export const allQueueMusics = async (queueId) => {
+export const createQueue = async (inputs) => {
   try {
-    const { data } = await axios.get(routes.allQueueMusics(queueId));
+    const { data } = await axios.put(routes.queue(), { name: inputs.name });
     return data.data;
   } catch (error) {
     if (error.response.status === 401) {
       useAuthStore().logout();
     }
-    useAlertStore().error(error.response.statusText);
+    useAlertStore().error(error);
   }
-  return [];
 };
 
-export const createQueue = async (name) => {
+export const updateQueue = async (queueId, data) => {
   try {
-    const { data } = await axios.put(routes.queues, { name: name });
-    return data.data;
+    await axios.patch(routes.queue(queueId), { name: data.name });
   } catch (error) {
     if (error.response.status === 401) {
       useAuthStore().logout();
     }
-    useAlertStore().error(error.response.statusText);
+    useAlertStore().error(error);
   }
 };
 
@@ -75,7 +82,38 @@ export const deleteQueue = async (queueId) => {
     if (error.response.status === 401) {
       useAuthStore().logout();
     }
-    useAlertStore().error(error.response.statusText);
+    useAlertStore().error(error);
+  }
+};
+
+//Queue Musics
+
+export const allQueueMusics = async (queueId) => {
+  try {
+    const { data } = await axios.get(routes.queueMusic(queueId));
+    return data.data;
+  } catch (error) {
+    if (error.response.status === 401) {
+      useAuthStore().logout();
+    }
+    useAlertStore().error(error);
+  }
+  return [];
+};
+
+export const createQueueMusic = async (queueId, inputs) => {
+  try {
+    const { data } = await axios.put(routes.queueMusic(queueId), {
+      reference_name: inputs.name,
+      url: inputs.url,
+    });
+    console.log(data);
+    return data.data;
+  } catch (error) {
+    if (error.response.status === 401) {
+      useAuthStore().logout();
+    }
+    useAlertStore().error(error);
   }
 };
 

@@ -1,5 +1,6 @@
 import App from "@/App";
 import router from "@/router";
+import print from 'vue3-print-nb';
 import { createPinia } from "pinia";
 import vuetify from "@/plugins/vuetify";
 import { loadFonts } from "@/plugins/webfontloader";
@@ -11,9 +12,10 @@ const app = createApp(App);
 const pinia = createPinia();
 
 pinia.use(({ store }) => {
-  store.router = markRaw(router);
+  store.router = markRaw(router)
 });
 
+app.use(print);
 app.use(pinia);
 app.use(router);
 app.use(vuetify);

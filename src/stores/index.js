@@ -2,8 +2,10 @@ import {
   login,
   allQueues,
   createQueue,
+  updateQueue,
   deleteQueue,
   allQueueMusics,
+  createQueueMusic,
 } from "@/router/api-routes";
 import { defineStore } from "pinia";
 
@@ -69,12 +71,18 @@ export const useQueueStore = defineStore({
     },
   },
   actions: {
-    async create(name) {
-      const data = await createQueue(name);
-      if (data) {
-        console.log(data);
-        this.queues.unshift(data);
+    async create(data) {
+      const response = await createQueue(data);
+      if (response) {
+        this.queues.unshift(response);
+        useQueueMusicStore().setMusics(response.id, true);
       }
+    },
+
+    async update(queueId, data) {
+      await updateQueue(queueId, data);
+      let index = this.getQueueIds.indexOf(queueId);
+      this.queues[index].name = data.name;
     },
 
     async delete(queueId) {
@@ -82,6 +90,7 @@ export const useQueueStore = defineStore({
       let index = this.getQueueIds.indexOf(queueId);
       this.queues.splice(index, 1);
     },
+
     async setQueues() {
       this.queues = await allQueues();
       if (this.queues) {
@@ -99,12 +108,26 @@ export const useQueueMusicStore = defineStore({
   state: () => ({
     queueMusic: [],
   }),
+  getters: {
+    getQueueMusicIds() {
+      return this.queueMusic?.map((queue) => {
+        return queue.queue_id;
+      });
+    },
+  },
   actions: {
-    async setMusics(queueId) {
+    async create(queueId, data) { 
+      const response = await createQueueMusic(queueId, data);
+      if (response) {
+        let index = this.getQueueMusicIds.indexOf(queueId);
+        this.queueMusic[index].musics.push(response);
+      }
+    },
+    async setMusics(queueId, empty) {
       try {
         let data = {
           queue_id: queueId,
-          musics: await allQueueMusics(queueId),
+          musics: empty ? [] : await allQueueMusics(queueId),
         };
         this.queueMusic.push(data);
       } catch (error) {
