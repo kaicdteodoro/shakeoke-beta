@@ -137,6 +137,18 @@ export const updateQueueMusic = async (queueId, musicId, inputs) => {
   }
 };
 
+export const deleteQueueMusic = async (queueId, musicId) => {
+  try {
+    const { data } = await axios.delete(routes.queueMusic(queueId, musicId));
+    return data.data;
+  } catch (error) {
+    if (error.response?.status === 401) {
+      useAuthStore().logout();
+    }
+    useAlertStore().error(error);
+  }
+};
+
 export const turnQueueMusicPosition = async (queueId, musicId, up) => {
   try {
     const { data } = await axios.post(

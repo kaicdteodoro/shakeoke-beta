@@ -3,5 +3,11 @@ export const ucFirst = (string) => {
 };
 
 export const isMobile = () => {
-  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  );
+};
+
+export const dateFormat = (value, format = "MM/DD/YYYY hh:mm") => {
+  return String(value).format(format);
 };

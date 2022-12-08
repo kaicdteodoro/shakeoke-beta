@@ -8,7 +8,16 @@
         <v-list lines="two">
           <v-toolbar color="rgba(0, 0, 0, 0)" :theme="theme">
             <v-list-subheader>
-              <p v-text="queue.name" class="mt-5"></p>
+              <v-tooltip :text="dateText(queue.created_at)">
+                <template v-slot:activator="{ props }">
+                  <p
+                    v-text="queue.name"
+                    class="mt-5"
+                    v-bind="props"
+                    theme="plain"
+                  ></p>
+                </template>
+              </v-tooltip>
               <v-chip
                 v-if="queue.closing_date"
                 color="error"
@@ -103,7 +112,9 @@
                       variant="text"
                       :icon="upDown ? 'mdi-arrow-up' : 'mdi-arrow-down'"
                       size="x-small"
-                      @click.stop="musicUpDown(index, queue.id, music.id, upDown)"
+                      @click.stop="
+                        musicUpDown(index, queue.id, music.id, upDown)
+                      "
                     ></v-btn>
                   </template>
                 </div>
@@ -114,6 +125,14 @@
                   size="x-small"
                   @click="
                     markMusicAsDone(index, queue.id, music.id, !music.done)
+                  "
+                ></v-btn>
+                <v-btn
+                  variant="text"
+                  icon="mdi-delete-outline"
+                  size="x-small"
+                  @click="
+                    removeMusic(index, queue.id, music.id)
                   "
                 ></v-btn>
               </div>
@@ -166,6 +185,9 @@ export default {
     this.queueMusic = queueMusic;
   },
   methods: {
+    dateText(value) {
+      return `Created at ${new Date(value).toLocaleString()}`;
+    },
     musics(queueId) {
       return this.queueMusic?.find((musics) => musics.queue_id === queueId)
         ?.musics;
@@ -191,17 +213,18 @@ export default {
       this.done[index] = isDone;
       await useQueueMusicStore().doneMusic(queueId, musicId, isDone ? 1 : 0);
     },
+    async removeMusic(index, queueId, musicId) {
+      await useQueueMusicStore().deleteMusic(queueId, musicId);
+      await useQueueMusicStore().setMusics(queueId, false, {
+        show_done: this.done[index] ? 1 : 0,
+      });
+    },
     async showDone(queueId, index) {
       this.done[index] = !this.done[index];
       await useQueueMusicStore().setMusics(queueId, false, {
         show_done: this.done[index] ? 1 : 0,
       });
     },
-  },
-  computed: {
-    /* async showDoned(queueId) {
-      return this.musics(queueId)
-    } */
   },
   components: {
     QueueDialog,
