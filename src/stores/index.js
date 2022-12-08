@@ -4,9 +4,10 @@ import {
   createQueue,
   updateQueue,
   deleteQueue,
-  updateQueueMusic,
   allQueueMusics,
   createQueueMusic,
+  updateQueueMusic,
+  turnQueueMusicPosition,
 } from "@/router/api-routes";
 import { defineStore } from "pinia";
 
@@ -182,6 +183,9 @@ export const useQueueMusicStore = defineStore({
         const alertStore = useAlertStore();
         alertStore.error(error);
       }
+    },
+    async turnPosition(queueId, musicId, up) {
+      await turnQueueMusicPosition(queueId, musicId, up);
     },
     async doneMusic(queueId, musicId, done) {
       await this.update(queueId, musicId, { done });

@@ -85,24 +85,27 @@
               </v-menu>
             </template>
           </v-toolbar>
-          <template v-for="(music, indexMusic) in musics(queue.id)" :key="music.id">
+          <template
+            v-for="(music, indexMusic) in musics(queue.id)"
+            :key="music.id"
+          >
             <v-list-item :disabled="queue.closing_date">
               <template v-slot:prepend>
                 <v-avatar color="grey-darken-1">{{ music.order }}°</v-avatar>
               </template>
               <div v-if="!queue.closing_date" class="d-flex float-right">
                 <div v-if="!music.done">
-                  <v-btn
-                    variant="text"
-                    icon="mdi-arrow-up"
-                    size="x-small"
-                  ></v-btn>
-
-                  <v-btn
-                    variant="text"
-                    icon="mdi-arrow-down"
-                    size="x-small"
-                  ></v-btn>
+                  <template
+                    v-for="(upDown, index) in [true, false]"
+                    :key="index"
+                  >
+                    <v-btn
+                      variant="text"
+                      :icon="upDown ? 'mdi-arrow-up' : 'mdi-arrow-down'"
+                      size="x-small"
+                      @click.stop="musicUpDown(index, queue.id, music.id, upDown)"
+                    ></v-btn>
+                  </template>
                 </div>
 
                 <v-btn
@@ -166,6 +169,12 @@ export default {
     musics(queueId) {
       return this.queueMusic?.find((musics) => musics.queue_id === queueId)
         ?.musics;
+    },
+    async musicUpDown(queueIndex, queueId, musicId, up) {
+      await useQueueMusicStore().turnPosition(queueId, musicId, up ? 1 : 0);
+      await useQueueMusicStore().setMusics(queueId, false, {
+        show_done: this.done[queueIndex] ? 1 : 0,
+      });
     },
     async deleteQueue(queueId) {
       await useQueueStore().delete(queueId);

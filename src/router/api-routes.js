@@ -19,10 +19,14 @@ const routes = {
     }
     return url;
   },
-  queueMusic: (queueId, queueMusicId) => {
+  queueMusic: (queueId, queueMusicId, params) => {
     let url = `${baseUrl}/queue/${queueId}/music`;
     if (queueMusicId) {
       url += `/${queueMusicId}`;
+    }
+
+    if (params?.up) {
+      url += `/${params.up}`;
     }
     return url;
   },
@@ -120,7 +124,24 @@ export const createQueueMusic = async (queueId, inputs) => {
 
 export const updateQueueMusic = async (queueId, musicId, inputs) => {
   try {
-    const { data } = await axios.patch(routes.queueMusic(queueId, musicId), inputs);
+    const { data } = await axios.patch(
+      routes.queueMusic(queueId, musicId),
+      inputs
+    );
+    return data.data;
+  } catch (error) {
+    if (error.response?.status === 401) {
+      useAuthStore().logout();
+    }
+    useAlertStore().error(error);
+  }
+};
+
+export const turnQueueMusicPosition = async (queueId, musicId, up) => {
+  try {
+    const { data } = await axios.post(
+      routes.queueMusic(queueId, musicId, { up: up ? "up" : "down" })
+    );
     return data.data;
   } catch (error) {
     if (error.response?.status === 401) {
