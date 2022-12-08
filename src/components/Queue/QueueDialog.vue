@@ -85,7 +85,7 @@ export default {
       return this.create ? "Create New Queue" : "Update Queue";
     },
     btnIcon() {
-      return this.create ? "mdi-plus" : "mdi-pencil";
+      return this.create ? "mdi-plus" : "mdi-pencil-outline";
     },
   },
 };

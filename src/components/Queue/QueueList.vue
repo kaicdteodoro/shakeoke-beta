@@ -63,7 +63,7 @@
                   <template v-if="!queue.closing_date">
                     <v-list-item>
                       <v-list-item-title>
-                        <queue-music-dialog :queueId="queue.id" />
+                        <queue-music-dialog :queueId="queue.id" create />
                       </v-list-item-title>
                     </v-list-item>
 
@@ -83,7 +83,7 @@
                   <v-list-item>
                     <v-list-item-title>
                       <v-btn
-                        icon="mdi-delete"
+                        icon="mdi-delete-outline"
                         variant="plain"
                         @click="deleteQueue(queue.id)"
                       >
@@ -102,6 +102,7 @@
               <template v-slot:prepend>
                 <v-avatar color="grey-darken-1">{{ music.order }}°</v-avatar>
               </template>
+              <!-- TODO: Melhorar visulização mobile dos botões das musicas -->
               <div v-if="!queue.closing_date" class="d-flex float-right">
                 <div v-if="!music.done">
                   <template
@@ -109,7 +110,7 @@
                     :key="index"
                   >
                     <v-btn
-                      variant="text"
+                      variant="plain"
                       :icon="upDown ? 'mdi-arrow-up' : 'mdi-arrow-down'"
                       size="x-small"
                       @click.stop="
@@ -120,20 +121,21 @@
                 </div>
 
                 <v-btn
-                  variant="text"
+                  variant="plain"
                   :icon="music.done ? 'mdi-lock-open' : 'mdi-check'"
                   size="x-small"
                   @click="
                     markMusicAsDone(index, queue.id, music.id, !music.done)
                   "
                 ></v-btn>
+
+                <queue-music-dialog v-if="!music.done" :queueId="queue.id" :musicId="music.id" sizeIcon="x-small" />
+
                 <v-btn
-                  variant="text"
+                  variant="plain"
                   icon="mdi-delete-outline"
                   size="x-small"
-                  @click="
-                    removeMusic(index, queue.id, music.id)
-                  "
+                  @click="removeMusic(index, queue.id, music.id)"
                 ></v-btn>
               </div>
               <v-list-item-title>

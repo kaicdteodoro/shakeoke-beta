@@ -2,7 +2,8 @@
   <v-dialog v-model="dialog" persistent>
     <template v-slot:activator="{ props }">
       <v-btn
-        icon="mdi-plus"
+        :icon="btnIcon"
+        :size="sizeIcon"
         variant="plain"
         v-bind="props"
         @click="clearInputs()"
@@ -10,7 +11,7 @@
       </v-btn>
     </template>
     <v-card class="w-25 mx-auto">
-      <v-card-title class="text-h5"> New Music </v-card-title>
+      <v-card-title class="text-h5" v-text="formTitle"></v-card-title>
 
       <v-card-text>
         <v-form
@@ -63,7 +64,10 @@ import { useQueueMusicStore } from "@/stores";
 export default {
   name: "QueueMusicDialog",
   props: {
+    sizeIcon: String,
+    create: Boolean,
     queueId: Number,
+    musicId: Number,
   },
   data: () => ({
     valid: true,
@@ -87,12 +91,22 @@ export default {
     },
     async validate() {
       if (this.$refs.dialogForm.validate()) {
-        let data = { name: this.referenceName, url: this.urlMusic };
-
-        await useQueueMusicStore().create(this.queueId, data);
-
+        let data = { reference_name: this.referenceName, url: this.urlMusic };
+        if (this.create) {
+          await useQueueMusicStore().create(this.queueId, data);
+        } else if (this.queueId && this.musicId) {
+          await useQueueMusicStore().update(this.queueId, this.musicId, data);
+        }
         this.dialog = false;
       }
+    },
+  },
+  computed: {
+    formTitle() {
+      return this.create ? "New Music" : "Update Music";
+    },
+    btnIcon() {
+      return this.create ? "mdi-plus" : "mdi-pencil-outline";
     },
   },
 };

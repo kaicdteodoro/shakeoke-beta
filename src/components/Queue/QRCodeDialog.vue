@@ -16,7 +16,7 @@
           size="large"
           color="surface-variant"
           variant="text"
-          icon="mdi-printer"
+          icon="mdi-printer-outline"
           v-print="'#card_qr_code'"
         ></v-btn>
 
